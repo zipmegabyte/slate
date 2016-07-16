@@ -4,10 +4,8 @@
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>API Reference</title>
+    <title>Referência da API Roadtrack</title>
 
-    <link href="stylesheets/screen.css" rel="stylesheet" media="screen" />
-    <link href="stylesheets/print.css" rel="stylesheet" media="print" />
     <style>
       .highlight table td { padding: 5px; }
 .highlight table pre { margin: 0; }
@@ -88,10 +86,12 @@
   color: #90a959;
 }
     </style>
+    <link href="stylesheets/screen.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/print.css" rel="stylesheet" media="print" />
       <script src="javascripts/all.js"></script>
   </head>
 
-  <body class="index" data-languages="[&quot;shell&quot;,&quot;ruby&quot;,&quot;python&quot;]">
+  <body class="index" data-languages="[]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -101,246 +101,687 @@
     <div class="tocify-wrapper">
       <img src="images/logo.png" />
         <div class="lang-selector">
-              <a href="#" data-language-name="shell">shell</a>
-              <a href="#" data-language-name="ruby">ruby</a>
-              <a href="#" data-language-name="python">python</a>
         </div>
         <div class="search">
-          <input type="text" class="search" id="input-search" placeholder="Search">
+          <input type="text" class="search" id="input-search" placeholder="Buscar">
         </div>
         <ul class="search-results"></ul>
       <div id="toc">
       </div>
-        <ul class="toc-footer">
-            <li><a href='#'>Sign Up for a Developer Key</a></li>
-            <li><a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a></li>
-        </ul>
     </div>
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h1 id="introduction">Introduction</h1>
+        <h1 id="introdu-o">Introdução</h1>
 
-<p>Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.</p>
+<p>Bem-vindo à API do Roadtrack! Você pode usar nossa API para acessar os endpoints com informações sobre Rotas, Manifestos, Contas e diversas outras entidades que compõe o sistema Roadtrack. </p>
 
-<p>We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.</p>
+<p>A API REST permite acesso fácil por sistemas e linguagens que entendam JSON.</p>
 
-<p>This example API documentation page was created with <a href="https://github.com/tripit/slate">Slate</a>. Feel free to edit it and use it as a base for your own API&rsquo;s documentation.</p>
+<p>Cada entidade da API possui um identificador <code class="prettyprint">href</code>, que é o endereço do seu endpoint. Desta forma, cada resposta possui o caminho para as próximas requisições, tornando o sistema fácil de navegar.</p>
 
-<h1 id="authentication">Authentication</h1>
+<p>Além de <code class="prettyprint">GET</code>, os endpoints aceitam os outros verbos HTTP para suas operações. <code class="prettyprint">POST</code> para a criação de novas entidades, <code class="prettyprint">PUT</code> para a edição e <code class="prettyprint">DELETE</code> para a exclusão. Estas operações estão subordinadas às permissões de acesso do usuário logado.</p>
 
-<blockquote>
-<p>To authorize, use this code:</p>
-</blockquote>
-<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
+<h2 id="modelo-de-entidade-relacionamento-do-sistema">Modelo de Entidade-Relacionamento do Sistema</h2>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+<p><img src="images/erd.png" alt="erd"></p>
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight shell"><code><span class="c"># With shell, you can just pass the correct header with each request</span>
-curl <span class="s2">"api_endpoint_here"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre>
+<h1 id="autentica-o">Autenticação</h1>
 
-<blockquote>
-<p>Make sure to replace <code class="prettyprint">meowmeowmeow</code> with your API key.</p>
-</blockquote>
-
-<p>Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our <a href="http://example.com/developers">developer portal</a>.</p>
-
-<p>Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:</p>
-
-<p><code class="prettyprint">Authorization: meowmeowmeow</code></p>
+<p>A autenticação é feita através de um cabeçalho <code class="prettyprint">Authorization</code> a ser enviado a cada requisição. Este cabeçalho deve conter um token de autenticação que o usuário recebe após fazer (login)[#login], da seguinte forma:</p>
 
 <aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
+Substitua <code>{token}</code> pelo token recebido ao fazer login.
 </aside>
 
-<h1 id="kittens">Kittens</h1>
-
-<h2 id="get-all-kittens">Get All Kittens</h2>
-<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span>
+<aside class="warning">
+O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, faça login novamente para obter outro.
+</aside>
+<pre class="highlight shell"><code>curl <span class="s2">"/api/v1/{endpoint}"</span>
+  -H <span class="s2">"Authorization: {token}"</span>
 </code></pre>
-<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">kittn</span>
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-</code></pre>
-<pre class="highlight shell"><code>curl <span class="s2">"http://example.com/api/kittens"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
+<h2 id="login">Login</h2>
+
+<p>O login dá acesso ao usuário às outras funcionalidades do sistema. Deve ser feito sempre que o token de acesso expirar.</p>
+
+<h3 id="https-request">HTTPS Request</h3>
+
+<p><code class="prettyprint">POST https://api.roadtrack.com.br/v1/login</code></p>
+
+<h3 id="par-metros-da-url">Parâmetros da URL</h3>
+
+<table><thead>
+<tr>
+<th>Parâmetro</th>
+<th>Descrição</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>email</td>
+<td>O email do usuário</td>
+</tr>
+<tr>
+<td>password</td>
+<td>A senha do usuário</td>
+</tr>
+</tbody></table>
+
+<h3 id="resposta">Resposta</h3>
+
+<table><thead>
+<tr>
+<th>Parâmetro</th>
+<th>Descrição</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>account</td>
+<td>A referência para a conta à qual o usuário pertence</td>
+</tr>
+<tr>
+<td>user</td>
+<td>O usuário autenticado</td>
+</tr>
+<tr>
+<td>token</td>
+<td>O token de autenticação</td>
+</tr>
+</tbody></table>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/login"</span>
+  -X POST
+  -F <span class="s2">"email={email}"</span>
+  -F <span class="s2">"password={password}"</span>
 </code></pre>
 
 <blockquote>
-<p>The above command returns JSON structured like this:</p>
+<p>O comando acima retorna:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/account/1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/user/1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1G8_s7P-V-4MGojaKD7a"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<h1 id="conta">Conta</h1>
+
+<p><code class="prettyprint">Account</code> é o obejto que representa a conta à qual o usuário autenticado está subordinado. Todas as informações passíveis de ser acessadas, como Rotas e Manifestos, são referentes à ela.</p>
+
+<h3 id="https-request">HTTPS request</h3>
+
+<p><code class="prettyprint">GET https://api.roadtrack.com.br/v1/account</code></p>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/account"</span>
+  -H <span class="s2">"Authorization: token"</span>
+</code></pre>
+
+<blockquote>
+<p>O comando acima retorna:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/account/1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ramada"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"subdomain"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ramada"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.412Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.412Z"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<h1 id="ve-culo">Veículo</h1>
+
+<p>&lsquo;Vehicle&rsquo; é o objeto que representa os diversos tipos de veículos utilizados nas rotas para cumprir os manifestos.</p>
+
+<h2 id="todos-os-ve-culos">Todos os Veículos</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/vehicle"</span>
+  -H <span class="s2">"Authorization: token"</span>
+</code></pre>
+
+<blockquote>
+<p>O comando acima retorna:</p>
 </blockquote>
 <pre class="highlight json"><code><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Fluffums"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calico"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/vehicle/18"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"KZY7142"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CAMINHÃO"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.498Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.498Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
   </span><span class="p">},</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/vehicle/19"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LLN3357"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"KOMBI"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.499Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.499Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/vehicle/20"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"KPO2180"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MOTO"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.501Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.501Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
 </span></code></pre>
 
-<p>This endpoint retrieves all kittens.</p>
-
-<h3 id="http-request">HTTP Request</h3>
-
-<p><code class="prettyprint">GET http://example.com/api/kittens</code></p>
-
-<h3 id="query-parameters">Query Parameters</h3>
-
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>include_cats</td>
-<td>false</td>
-<td>If set to true, the result will also include cats.</td>
-</tr>
-<tr>
-<td>available</td>
-<td>true</td>
-<td>If set to false, the result will include kittens that have already been adopted.</td>
-</tr>
-</tbody></table>
-
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
-
-<h2 id="get-a-specific-kitten">Get a Specific Kitten</h2>
-<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<h2 id="um-ve-culo">Um Veículo</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/vehicle/{id}"</span>
+  -H <span class="s2">"Authorization: token"</span>
 </code></pre>
-<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">kittn</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight shell"><code>curl <span class="s2">"http://example.com/api/kittens/2"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre>
-
-<blockquote>
-<p>The above command returns JSON structured like this:</p>
-</blockquote>
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
+  </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/vehicle/18"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"KZY7142"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CAMINHÃO"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.498Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.498Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"account_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"routes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13102"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.571Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-06-21T18:47:02.287Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-06-21T10:20:00.000Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/vehicle/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"warehouse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/warehouse/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13103"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.576Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.576Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.575Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/vehicle/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"warehouse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/warehouse/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13104"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.581Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.581Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.579Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/vehicle/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"warehouse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/warehouse/2"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<p>This endpoint retrieves a specific kitten.</p>
+<h1 id="centros-de-distribui-o">Centros de Distribuição</h1>
 
-<aside class="warning">Inside HTML code blocks like this one, you can&rsquo;t use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+<p><code class="prettyprint">Warehouse</code> é o nome do objeto que representa um Centro de Distribuição no sistema. Ele é o ponto de partida e o ponto de chegada de uma Rota.</p>
 
-<h3 id="http-request">HTTP Request</h3>
+<h2 id="todos-os-centros-de-distribui-o">Todos os Centros de Distribuição</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/warehouse"</span>
+  -H <span class="s2">"Authorization: token"</span>
+</code></pre>
 
-<p><code class="prettyprint">GET http://example.com/kittens/&lt;ID&gt;</code></p>
+<blockquote>
+<p>O comando acima retorna:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/warehouse/1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RAMADA CD 01"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rua Pedro Jorio 365 - Rio de Janeiro, RJ - 21530-030 "</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-22.826978</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.354807</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.443Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.443Z"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/warehouse/2"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RAMADA CD 02"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rua dos Diamantes 388 - Rio de Janeiro, RJ - 21510-003"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.447Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.447Z"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
 
-<h3 id="url-parameters">URL Parameters</h3>
+<h2 id="um-centro-de-distribui-o">Um Centro de Distribuição</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/warehouse/{id}"</span>
+  -H <span class="s2">"Authorization: token"</span>
+</code></pre>
+
+<blockquote>
+<p>Ocomando acima retorna:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/warehouse/1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RAMADA CD 01"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rua Pedro Jorio 365 - Rio de Janeiro, RJ - 21530-030 "</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-22.826978</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.354807</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.443Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.443Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"routes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13102"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.571Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-06-21T18:47:02.287Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-06-21T10:20:00.000Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/vehicle/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"warehouse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/warehouse/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13103"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.576Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.576Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.575Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/vehicle/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"warehouse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/warehouse/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13104"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.581Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.581Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.579Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/vehicle/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"warehouse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/warehouse/2"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<h1 id="rota">Rota</h1>
+
+<p><code class="prettyprint">Route</code> é o objeto que representa uma Rota. A Rota é composta por um Centro de Distribuição, um Veículo e diversos Manifestos.</p>
+
+<h2 id="todas-as-rotas">Todas as Rotas</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/route"</span>
+  -H <span class="s2">"Authorization: token"</span>
+</code></pre>
+
+<blockquote>
+<p>Ocomando acima retorna:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13103"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.576Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.576Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.575Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/vehicle/1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"warehouse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/warehouse/1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13104"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.581Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.581Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.579Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/vehicle/1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"warehouse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/warehouse/2"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13102"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.571Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-06-21T18:47:02.287Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-06-21T10:20:00.000Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/vehicle/1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"warehouse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/warehouse/1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
+
+<h2 id="uma-rota">Uma Rota</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/route/{id}"</span>
+  -H <span class="s2">"Authorization: token"</span>
+</code></pre>
+
+<blockquote>
+<p>Ocomando acima retorna:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13103"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.576Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.576Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.575Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"vehicle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/vehicle/1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"warehouse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/warehouse/1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/account/1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"manifests"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/manifest/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"E"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"invoice_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"323996"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"invoice_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2014-12-03"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"invoice_value"</span><span class="p">:</span><span class="w"> </span><span class="mf">941.21</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"sequence"</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"items_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"gross_weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"# ROSHELAR MAT. ELETR. HIDR.LTDA(M.E)"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2607</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2134641468"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_federal_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4065336000193"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"marcio777@gmail.com"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DO GOVERNO"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1067"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_more"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_zip"</span><span class="p">:</span><span class="w"> </span><span class="s2">"21770100"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_region"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CAMPO GRANDE "</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RIO DE JANEIRO"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RJ"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-22.90856</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.176935</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"comments"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TESTANDO CARGA DE DADOS"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"initial"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.609Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.609Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"imported_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/account/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13102"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/manifest/7"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"E"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"invoice_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"324024"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"invoice_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2014-12-03"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"invoice_value"</span><span class="p">:</span><span class="w"> </span><span class="mf">1089.92</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"sequence"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"items_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"gross_weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BAZAR SAO DOMINGOS DE BANGU LTDA ME"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">46305</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"00213331 8662"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_federal_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4080423000110"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"marcio777@gmail.com"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CEL. TAMARINDO"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SN"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_more"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LOJA C PLAT EST BANGU"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_zip"</span><span class="p">:</span><span class="w"> </span><span class="s2">"21840440"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_region"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CAMPO GRANDE "</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RIO DE JANEIRO"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RJ"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-22.96354</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.348961</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"comments"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TESTANDO CARGA DE DADOS"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"initial"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.638Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.638Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"imported_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/account/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13102"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/manifest/8"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"E"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"invoice_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"324025"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"invoice_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2014-12-03"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"invoice_value"</span><span class="p">:</span><span class="w"> </span><span class="mf">219.77</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"sequence"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"items_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"gross_weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GGJ BZ.E MATERIAIS DE CONSTRUCAO LTDA."</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1513</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2124128396"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_federal_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"7649256000173"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"client_email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"marcio777@gmail.com"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ARY LOBO"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SN"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_more"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LOTE 31 QUADRA 37"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_zip"</span><span class="p">:</span><span class="w"> </span><span class="s2">"23088120"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_region"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CAMPO GRANDE "</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RIO DE JANEIRO"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"address_state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RJ"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-23.012213</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.433418</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"comments"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TESTANDO CARGA DE DADOS"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"initial"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.643Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.643Z"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"imported_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/account/1"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13102"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<h1 id="manifesto">Manifesto</h1>
+
+<p><code class="prettyprint">Manifest</code> é o objeto que representa os Manifestos. Cada manifesto contém informações sobre o cliente o tipo de serviço que vai ser feito, assim como as datas de chegada, saída e o status da operação.</p>
+
+<h2 id="todos-os-manifestos">Todos os Manifestos</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/manifest"</span>
+  -H <span class="s2">"Authorization: token"</span>
+</code></pre>
+
+<blockquote>
+<p>Ocomando acima retorna:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/manifest/1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"E"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"invoice_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"323996"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"invoice_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2014-12-03"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"invoice_value"</span><span class="p">:</span><span class="w"> </span><span class="mf">941.21</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"sequence"</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"items_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"gross_weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"# ROSHELAR MAT. ELETR. HIDR.LTDA(M.E)"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2607</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2134641468"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_federal_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4065336000193"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"marcio777@gmail.com"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DO GOVERNO"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1067"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_more"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_zip"</span><span class="p">:</span><span class="w"> </span><span class="s2">"21770100"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_region"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CAMPO GRANDE "</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RIO DE JANEIRO"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RJ"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-22.90856</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.176935</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"comments"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TESTANDO CARGA DE DADOS"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"initial"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.609Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.609Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"imported_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/account/1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13102"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/manifest/7"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"E"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"invoice_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"324024"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"invoice_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2014-12-03"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"invoice_value"</span><span class="p">:</span><span class="w"> </span><span class="mf">1089.92</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"sequence"</span><span class="p">:</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"items_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"gross_weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BAZAR SAO DOMINGOS DE BANGU LTDA ME"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">46305</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"00213331 8662"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_federal_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4080423000110"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"marcio777@gmail.com"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CEL. TAMARINDO"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SN"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_more"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LOJA C PLAT EST BANGU"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_zip"</span><span class="p">:</span><span class="w"> </span><span class="s2">"21840440"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_region"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CAMPO GRANDE "</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RIO DE JANEIRO"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RJ"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-22.96354</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.348961</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"comments"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TESTANDO CARGA DE DADOS"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"initial"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.638Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.638Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"imported_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/account/1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13102"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/manifest/8"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"E"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"invoice_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"324025"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"invoice_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2014-12-03"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"invoice_value"</span><span class="p">:</span><span class="w"> </span><span class="mf">219.77</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"sequence"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"items_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"gross_weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GGJ BZ.E MATERIAIS DE CONSTRUCAO LTDA."</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1513</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2124128396"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_federal_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"7649256000173"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"client_email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"marcio777@gmail.com"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ARY LOBO"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SN"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_more"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LOTE 31 QUADRA 37"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_zip"</span><span class="p">:</span><span class="w"> </span><span class="s2">"23088120"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_region"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CAMPO GRANDE "</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RIO DE JANEIRO"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"address_state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RJ"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-23.012213</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.433418</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"comments"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TESTANDO CARGA DE DADOS"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"initial"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.643Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.643Z"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"imported_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/account/1"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13102"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
+
+<h2 id="um-manifesto">Um Manifesto</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/manifest/{id}"</span>
+  -H <span class="s2">"Authorization: token"</span>
+</code></pre>
+
+<blockquote>
+<p>Ocomando acima retorna:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/manifest/8"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"E"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"invoice_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"324025"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"invoice_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2014-12-03"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"invoice_value"</span><span class="p">:</span><span class="w"> </span><span class="mf">219.77</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"sequence"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"items_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"gross_weight"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"client_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GGJ BZ.E MATERIAIS DE CONSTRUCAO LTDA."</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"client_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1513</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"client_phone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2124128396"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"client_federal_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"7649256000173"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"client_email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"marcio777@gmail.com"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"address_street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ARY LOBO"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"address_number"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SN"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"address_more"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LOTE 31 QUADRA 37"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"address_zip"</span><span class="p">:</span><span class="w"> </span><span class="s2">"23088120"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"address_region"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CAMPO GRANDE "</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"address_city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RIO DE JANEIRO"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"address_state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RJ"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"latitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-23.012213</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"longitude"</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.433418</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"comments"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TESTANDO CARGA DE DADOS"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"initial"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"arrive_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"leave_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.643Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2016-04-10T10:20:26.643Z"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"imported_at"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/account/1"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"route"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/route/13102"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+          <h1 id="erros">Erros</h1>
+
+<p>A API do Roadtrack utiliza os seguintes códigos de erro:</p>
 
 <table><thead>
 <tr>
-<th>Parameter</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>ID</td>
-<td>The ID of the kitten to retrieve</td>
-</tr>
-</tbody></table>
-
-          <h1 id="errors">Errors</h1>
-
-<aside class="notice">This error section is stored in a separate file in `includes/_errors.md`. Slate allows you to optionally separate out your docs into many files&hellip;just save them to the `includes` folder and add them to the top of your `index.md`&rsquo;s frontmatter. Files are included in the order listed.</aside>
-
-<p>The Kittn API uses the following error codes:</p>
-
-<table><thead>
-<tr>
-<th>Error Code</th>
-<th>Meaning</th>
+<th>Código</th>
+<th>Significado</th>
 </tr>
 </thead><tbody>
 <tr>
 <td>400</td>
-<td>Bad Request &ndash; Your request sucks</td>
+<td>Bad Request &ndash; Há algo errado com sua requisição</td>
 </tr>
 <tr>
 <td>401</td>
-<td>Unauthorized &ndash; Your API key is wrong</td>
+<td>Unauthorized &ndash; Seu token de autenticação é inválido</td>
 </tr>
 <tr>
 <td>403</td>
-<td>Forbidden &ndash; The kitten requested is hidden for administrators only</td>
+<td>Forbidden &ndash; A requisição é proibida para o nível de acesso do usuário</td>
 </tr>
 <tr>
 <td>404</td>
-<td>Not Found &ndash; The specified kitten could not be found</td>
+<td>Not Found &ndash; O endpoint não foi encontrado</td>
 </tr>
 <tr>
 <td>405</td>
-<td>Method Not Allowed &ndash; You tried to access a kitten with an invalid method</td>
+<td>Method Not Allowed &ndash; Você tentou acessar o endpoint com um método inválido</td>
 </tr>
 <tr>
 <td>406</td>
-<td>Not Acceptable &ndash; You requested a format that isn&rsquo;t json</td>
+<td>Not Acceptable &ndash; Você requisitou um formato diferente de JSON</td>
 </tr>
 <tr>
 <td>410</td>
-<td>Gone &ndash; The kitten requested has been removed from our servers</td>
-</tr>
-<tr>
-<td>418</td>
-<td>I&rsquo;m a teapot</td>
+<td>Gone &ndash; A entidade requisitada não existe mais</td>
 </tr>
 <tr>
 <td>429</td>
-<td>Too Many Requests &ndash; You&rsquo;re requesting too many kittens! Slow down!</td>
+<td>Too Many Requests &ndash; Você fez muitas requisições ao mesmo tempo.</td>
 </tr>
 <tr>
 <td>500</td>
-<td>Internal Server Error &ndash; We had a problem with our server. Try again later.</td>
+<td>Internal Server Error &ndash; Problemas no servidor. Tente novamente mais tarde.</td>
 </tr>
 <tr>
 <td>503</td>
-<td>Service Unavailable &ndash; We&rsquo;re temporarially offline for maintanance. Please try again later.</td>
+<td>Service Unavailable &ndash; Nós estamos temporariamente offline para manutenção. Tente novamente mais tarde.</td>
 </tr>
 </tbody></table>
 
       </div>
       <div class="dark-box">
           <div class="lang-selector">
-                <a href="#" data-language-name="shell">shell</a>
-                <a href="#" data-language-name="ruby">ruby</a>
-                <a href="#" data-language-name="python">python</a>
           </div>
       </div>
     </div>
