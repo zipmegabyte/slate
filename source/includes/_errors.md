@@ -1,20 +1,17 @@
-# Errors
+# Erros
 
-<aside class="notice">This error section is stored in a separate file in `includes/_errors.md`. Slate allows you to optionally separate out your docs into many files...just save them to the `includes` folder and add them to the top of your `index.md`'s frontmatter. Files are included in the order listed.</aside>
-
-The Kittn API uses the following error codes:
+A API do Roadtrack utiliza os seguintes códigos de erro:
 
 
-Error Code | Meaning
+Código | Significado
 ---------- | -------
-400 | Bad Request -- Your request sucks
-401 | Unauthorized -- Your API key is wrong
-403 | Forbidden -- The kitten requested is hidden for administrators only
-404 | Not Found -- The specified kitten could not be found
-405 | Method Not Allowed -- You tried to access a kitten with an invalid method
-406 | Not Acceptable -- You requested a format that isn't json
-410 | Gone -- The kitten requested has been removed from our servers
-418 | I'm a teapot
-429 | Too Many Requests -- You're requesting too many kittens! Slow down!
-500 | Internal Server Error -- We had a problem with our server. Try again later.
-503 | Service Unavailable -- We're temporarially offline for maintanance. Please try again later.
+400 | Bad Request -- Há algo errado com sua requisição
+401 | Unauthorized -- Seu token de autenticação é inválido
+403 | Forbidden -- A requisição é proibida para o nível de acesso do usuário
+404 | Not Found -- O endpoint não foi encontrado
+405 | Method Not Allowed -- Você tentou acessar o endpoint com um método inválido
+406 | Not Acceptable -- Você requisitou um formato diferente de JSON
+410 | Gone -- A entidade requisitada não existe mais
+429 | Too Many Requests -- Você fez muitas requisições ao mesmo tempo.
+500 | Internal Server Error -- Problemas no servidor. Tente novamente mais tarde.
+503 | Service Unavailable -- Nós estamos temporariamente offline para manutenção. Tente novamente mais tarde.
