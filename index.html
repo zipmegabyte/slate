@@ -128,26 +128,20 @@
 
 <h1 id="autentica-o">Autenticação</h1>
 
-<p>A autenticação é feita através de um cabeçalho <code class="prettyprint">Authorization</code> a ser enviado a cada requisição. Este cabeçalho deve conter um token de autenticação que o usuário recebe após fazer (login)[#login], da seguinte forma:</p>
-
-<aside class="notice">
-Substitua <code>{token}</code> pelo token recebido ao fazer login.
-</aside>
-
-<aside class="warning">
-O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, faça login novamente para obter outro.
-</aside>
+<p>A autenticação é feita através do envio de cabeçalhos  específicos a cada requisição. Estes cabeçalhos devem conter dados de autenticação que o usuário recebe após fazer <a href="#login">login</a>, da seguinte forma:</p>
 <pre class="highlight shell"><code>curl <span class="s2">"/api/v1/{endpoint}"</span>
-  -H <span class="s2">"Authorization: {token}"</span>
+  -H <span class="s2">"access-token: {access-token}"</span> 
+  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
 <h2 id="login">Login</h2>
 
-<p>O login dá acesso ao usuário às outras funcionalidades do sistema. Deve ser feito sempre que o token de acesso expirar.</p>
+<p>O Login dá acesso ao usuário às outras funcionalidades do sistema. Deve ser feito sempre que o token de acesso expirar.</p>
 
 <h3 id="https-request">HTTPS Request</h3>
 
-<p><code class="prettyprint">POST https://api.roadtrack.com.br/v1/login</code></p>
+<p><code class="prettyprint">POST https://api.roadtrack.com.br/v1/user/login</code></p>
 
 <h3 id="par-metros-da-url">Parâmetros da URL</h3>
 
@@ -176,19 +170,41 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 </tr>
 </thead><tbody>
 <tr>
-<td>account</td>
-<td>A referência para a conta à qual o usuário pertence</td>
-</tr>
-<tr>
-<td>user</td>
-<td>O usuário autenticado</td>
-</tr>
-<tr>
-<td>token</td>
-<td>O token de autenticação</td>
+<td>data</td>
+<td>Informações do usuário autenticado</td>
 </tr>
 </tbody></table>
-<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/login"</span>
+
+<h2 id="cabe-alhos">Cabeçalhos</h2>
+
+<table><thead>
+<tr>
+<th>Cabeçalho</th>
+<th>Descrição</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>access-token</td>
+<td>O token de acesso</td>
+</tr>
+<tr>
+<td>token-type</td>
+<td>O tipo do token, usualmente &ldquo;Bearer&rdquo;</td>
+</tr>
+<tr>
+<td>client</td>
+<td>Identificador do cliente</td>
+</tr>
+<tr>
+<td>expiry</td>
+<td>Timestamp de expiração do token</td>
+</tr>
+<tr>
+<td>uid</td>
+<td>Identificador único do usuário</td>
+</tr>
+</tbody></table>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/user_sign_in"</span>
   -X POST
   -F <span class="s2">"email={email}"</span>
   -F <span class="s2">"password={password}"</span>
@@ -198,9 +214,16 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 <p>O comando acima retorna:</p>
 </blockquote>
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/account/1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/user/1"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1G8_s7P-V-4MGojaKD7a"</span><span class="w">
+  </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user@test.com"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"provider"</span><span class="p">:</span><span class="w"> </span><span class="s2">"email"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"account_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"uid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user@test.com"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John Appleseed"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"nickname"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"image"</span><span class="p">:</span><span class="w"> </span><span class="s2">"image.jpg"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 
@@ -212,7 +235,9 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 
 <p><code class="prettyprint">GET https://api.roadtrack.com.br/v1/account</code></p>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/account"</span>
-  -H <span class="s2">"Authorization: token"</span>
+  -H <span class="s2">"access-token: {access-token}"</span> 
+  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
 <blockquote>
@@ -233,7 +258,9 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 
 <h2 id="todos-os-ve-culos">Todos os Veículos</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/vehicle"</span>
-  -H <span class="s2">"Authorization: token"</span>
+  -H <span class="s2">"access-token: {access-token}"</span> 
+  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
 <blockquote>
@@ -272,7 +299,9 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 
 <h2 id="um-ve-culo">Um Veículo</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/vehicle/{id}"</span>
-  -H <span class="s2">"Authorization: token"</span>
+  -H <span class="s2">"access-token: {access-token}"</span> 
+  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"client: {client}"</span>
 </code></pre>
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
   </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/vehicle/18"</span><span class="p">,</span><span class="w">
@@ -323,7 +352,9 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 
 <h2 id="todos-os-centros-de-distribui-o">Todos os Centros de Distribuição</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/warehouse"</span>
-  -H <span class="s2">"Authorization: token"</span>
+  -H <span class="s2">"access-token: {access-token}"</span> 
+  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
 <blockquote>
@@ -353,11 +384,13 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 
 <h2 id="um-centro-de-distribui-o">Um Centro de Distribuição</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/warehouse/{id}"</span>
-  -H <span class="s2">"Authorization: token"</span>
+  -H <span class="s2">"access-token: {access-token}"</span> 
+  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
 <blockquote>
-<p>Ocomando acima retorna:</p>
+<p>O comando acima retorna:</p>
 </blockquote>
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
   </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.roadtrack.com.br/v1/warehouse/1"</span><span class="p">,</span><span class="w">
@@ -408,7 +441,9 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 
 <h2 id="todas-as-rotas">Todas as Rotas</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/route"</span>
-  -H <span class="s2">"Authorization: token"</span>
+  -H <span class="s2">"access-token: {access-token}"</span> 
+  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
 <blockquote>
@@ -450,7 +485,9 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 
 <h2 id="uma-rota">Uma Rota</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/route/{id}"</span>
-  -H <span class="s2">"Authorization: token"</span>
+  -H <span class="s2">"access-token: {access-token}"</span> 
+  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
 <blockquote>
@@ -575,7 +612,9 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 
 <h2 id="todos-os-manifestos">Todos os Manifestos</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/manifest"</span>
-  -H <span class="s2">"Authorization: token"</span>
+  -H <span class="s2">"access-token: {access-token}"</span> 
+  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
 <blockquote>
@@ -686,7 +725,9 @@ O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, fa
 
 <h2 id="um-manifesto">Um Manifesto</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/manifest/{id}"</span>
-  -H <span class="s2">"Authorization: token"</span>
+  -H <span class="s2">"access-token: {access-token}"</span> 
+  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
 <blockquote>
