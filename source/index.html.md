@@ -23,48 +23,49 @@ Além de `GET`, os endpoints aceitam os outros verbos HTTP para suas operações
 
 # Autenticação
 
-A autenticação é feita através de um cabeçalho `Authorization` a ser enviado a cada requisição. Este cabeçalho deve conter um token de autenticação que o usuário recebe após fazer (login)[#login], da seguinte forma:
-
-
-<aside class="notice">
-Substitua <code>{token}</code> pelo token recebido ao fazer login.
-</aside>
-
-<aside class="warning">
-O token tem um tempo de vida curto. Se ele for expirado durante o uso da API, faça login novamente para obter outro.
-</aside>
+A autenticação é feita através do envio de cabeçalhos  específicos a cada requisição. Estes cabeçalhos devem conter dados de autenticação que o usuário recebe após fazer <a href="#login">login</a>, da seguinte forma:
 
 
 ```shell
 curl "/api/v1/{endpoint}"
-  -H "Authorization: {token}"
+  -H "access-token: {access-token}" 
+  -H "uid: {uid}" 
+  -H "client: {client}"
 ```
 
 ## Login
 
-O login dá acesso ao usuário às outras funcionalidades do sistema. Deve ser feito sempre que o token de acesso expirar.
+O Login dá acesso ao usuário às outras funcionalidades do sistema. Deve ser feito sempre que o token de acesso expirar.
 
 ### HTTPS Request
-`POST https://api.roadtrack.com.br/v1/login`
+`POST https://api.roadtrack.com.br/v1/user/login`
 
 ### Parâmetros da URL
 
 Parâmetro | Descrição
---------- | -----------
-email | O email do usuário
-password | A senha do usuário
+--------- | ---------
+email     | O email do usuário
+password  | A senha do usuário
 
 ### Resposta
 
 Parâmetro | Descrição
---------- | -----------
-account | A referência para a conta à qual o usuário pertence
-user | O usuário autenticado
-token | O token de autenticação
+--------- | ---------
+data      | Informações do usuário autenticado
+
+## Cabeçalhos
+
+Cabeçalho    | Descrição
+------------ | ---------
+access-token | O token de acesso
+token-type   | O tipo do token, usualmente "Bearer"
+client       | Identificador do cliente
+expiry       | Timestamp de expiração do token
+uid          | Identificador único do usuário
 
 
 ```shell
-curl "https://api.roadtrack.com.br/v1/login"
+curl "https://api.roadtrack.com.br/v1/user_sign_in"
   -X POST
   -F "email={email}"
   -F "password={password}"
@@ -74,9 +75,16 @@ curl "https://api.roadtrack.com.br/v1/login"
 
 ```json
 {
-  "account": "https://api.roadtrack.com.br/v1/account/1",
-  "user": "https://api.roadtrack.com.br/v1/user/1",
-  "token": "1G8_s7P-V-4MGojaKD7a"
+  "data": {
+    "id": 2,
+    "email": "user@test.com",
+    "provider": "email",
+    "account_id": 1,
+    "uid": "user@test.com",
+    "name": "John Appleseed",
+    "nickname": "John",
+    "image": "image.jpg"
+  }
 }
 ```
 
@@ -90,7 +98,9 @@ curl "https://api.roadtrack.com.br/v1/login"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/account"
-  -H "Authorization: token"
+  -H "access-token: {access-token}" 
+  -H "uid: {uid}" 
+  -H "client: {client}"
 ```
 
 > O comando acima retorna:
@@ -113,7 +123,9 @@ curl "https://api.roadtrack.com.br/v1/account"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/vehicle"
-  -H "Authorization: token"
+  -H "access-token: {access-token}" 
+  -H "uid: {uid}" 
+  -H "client: {client}"
 ```
 
 > O comando acima retorna:
@@ -154,7 +166,9 @@ curl "https://api.roadtrack.com.br/v1/vehicle"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/vehicle/{id}"
-  -H "Authorization: token"
+  -H "access-token: {access-token}" 
+  -H "uid: {uid}" 
+  -H "client: {client}"
 ```
 
 ```json
@@ -209,7 +223,9 @@ curl "https://api.roadtrack.com.br/v1/vehicle/{id}"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/warehouse"
-  -H "Authorization: token"
+  -H "access-token: {access-token}" 
+  -H "uid: {uid}" 
+  -H "client: {client}"
 ```
 
 > O comando acima retorna:
@@ -241,10 +257,12 @@ curl "https://api.roadtrack.com.br/v1/warehouse"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/warehouse/{id}"
-  -H "Authorization: token"
+  -H "access-token: {access-token}" 
+  -H "uid: {uid}" 
+  -H "client: {client}"
 ```
 
-> Ocomando acima retorna:
+> O comando acima retorna:
 
 ```json
 {
@@ -298,7 +316,9 @@ curl "https://api.roadtrack.com.br/v1/warehouse/{id}"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/route"
-  -H "Authorization: token"
+  -H "access-token: {access-token}" 
+  -H "uid: {uid}" 
+  -H "client: {client}"
 ```
 
 > Ocomando acima retorna:
@@ -342,7 +362,9 @@ curl "https://api.roadtrack.com.br/v1/route"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/route/{id}"
-  -H "Authorization: token"
+  -H "access-token: {access-token}" 
+  -H "uid: {uid}" 
+  -H "client: {client}"
 ```
 
 > Ocomando acima retorna:
@@ -469,7 +491,9 @@ curl "https://api.roadtrack.com.br/v1/route/{id}"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/manifest"
-  -H "Authorization: token"
+  -H "access-token: {access-token}" 
+  -H "uid: {uid}" 
+  -H "client: {client}"
 ```
 
 > Ocomando acima retorna:
@@ -582,7 +606,9 @@ curl "https://api.roadtrack.com.br/v1/manifest"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/manifest/{id}"
-  -H "Authorization: token"
+  -H "access-token: {access-token}" 
+  -H "uid: {uid}" 
+  -H "client: {client}"
 ```
 
 > Ocomando acima retorna:
