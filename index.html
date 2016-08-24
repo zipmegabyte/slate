@@ -114,7 +114,7 @@
       <div class="content">
         <h1 id="introdu-o">Introdução</h1>
 
-<p>Bem-vindo à API do Roadtrack! Você pode usar nossa API para acessar os endpoints com informações sobre Rotas, Manifestos, Contas e diversas outras entidades que compõe o sistema Roadtrack. </p>
+<p>Bem-vindo à API do Roadtrack! Você pode usar nossa API para acessar os endpoints com informações sobre Rotas, Manifestos, Contas e diversas outras entidades que compõe o sistema Roadtrack.</p>
 
 <p>A API REST permite acesso fácil por sistemas e linguagens que entendam JSON.</p>
 
@@ -130,8 +130,8 @@
 
 <p>A autenticação é feita através do envio de cabeçalhos  específicos a cada requisição. Estes cabeçalhos devem conter dados de autenticação que o usuário recebe após fazer <a href="#login">login</a>, da seguinte forma:</p>
 <pre class="highlight shell"><code>curl <span class="s2">"/api/v1/{endpoint}"</span>
-  -H <span class="s2">"access-token: {access-token}"</span> 
-  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"access-token: {access-token}"</span>
+  -H <span class="s2">"uid: {uid}"</span>
   -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
@@ -204,7 +204,7 @@
 <td>Identificador único do usuário</td>
 </tr>
 </tbody></table>
-<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/user_sign_in"</span>
+<pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/user/login"</span>
   -X POST
   -F <span class="s2">"email={email}"</span>
   -F <span class="s2">"password={password}"</span>
@@ -235,8 +235,8 @@
 
 <p><code class="prettyprint">GET https://api.roadtrack.com.br/v1/account</code></p>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/account"</span>
-  -H <span class="s2">"access-token: {access-token}"</span> 
-  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"access-token: {access-token}"</span>
+  -H <span class="s2">"uid: {uid}"</span>
   -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
@@ -258,8 +258,8 @@
 
 <h2 id="todos-os-ve-culos">Todos os Veículos</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/vehicle"</span>
-  -H <span class="s2">"access-token: {access-token}"</span> 
-  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"access-token: {access-token}"</span>
+  -H <span class="s2">"uid: {uid}"</span>
   -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
@@ -299,8 +299,8 @@
 
 <h2 id="um-ve-culo">Um Veículo</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/vehicle/{id}"</span>
-  -H <span class="s2">"access-token: {access-token}"</span> 
-  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"access-token: {access-token}"</span>
+  -H <span class="s2">"uid: {uid}"</span>
   -H <span class="s2">"client: {client}"</span>
 </code></pre>
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
@@ -352,8 +352,8 @@
 
 <h2 id="todos-os-centros-de-distribui-o">Todos os Centros de Distribuição</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/warehouse"</span>
-  -H <span class="s2">"access-token: {access-token}"</span> 
-  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"access-token: {access-token}"</span>
+  -H <span class="s2">"uid: {uid}"</span>
   -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
@@ -384,8 +384,8 @@
 
 <h2 id="um-centro-de-distribui-o">Um Centro de Distribuição</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/warehouse/{id}"</span>
-  -H <span class="s2">"access-token: {access-token}"</span> 
-  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"access-token: {access-token}"</span>
+  -H <span class="s2">"uid: {uid}"</span>
   -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
@@ -441,8 +441,8 @@
 
 <h2 id="todas-as-rotas">Todas as Rotas</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/route"</span>
-  -H <span class="s2">"access-token: {access-token}"</span> 
-  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"access-token: {access-token}"</span>
+  -H <span class="s2">"uid: {uid}"</span>
   -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
@@ -485,8 +485,8 @@
 
 <h2 id="uma-rota">Uma Rota</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/route/{id}"</span>
-  -H <span class="s2">"access-token: {access-token}"</span> 
-  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"access-token: {access-token}"</span>
+  -H <span class="s2">"uid: {uid}"</span>
   -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
@@ -612,8 +612,8 @@
 
 <h2 id="todos-os-manifestos">Todos os Manifestos</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/manifest"</span>
-  -H <span class="s2">"access-token: {access-token}"</span> 
-  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"access-token: {access-token}"</span>
+  -H <span class="s2">"uid: {uid}"</span>
   -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
@@ -725,8 +725,8 @@
 
 <h2 id="um-manifesto">Um Manifesto</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"https://api.roadtrack.com.br/v1/manifest/{id}"</span>
-  -H <span class="s2">"access-token: {access-token}"</span> 
-  -H <span class="s2">"uid: {uid}"</span> 
+  -H <span class="s2">"access-token: {access-token}"</span>
+  -H <span class="s2">"uid: {uid}"</span>
   -H <span class="s2">"client: {client}"</span>
 </code></pre>
 
