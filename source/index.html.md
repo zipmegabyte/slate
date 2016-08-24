@@ -9,7 +9,7 @@ search: true
 
 # Introdução
 
-Bem-vindo à API do Roadtrack! Você pode usar nossa API para acessar os endpoints com informações sobre Rotas, Manifestos, Contas e diversas outras entidades que compõe o sistema Roadtrack. 
+Bem-vindo à API do Roadtrack! Você pode usar nossa API para acessar os endpoints com informações sobre Rotas, Manifestos, Contas e diversas outras entidades que compõe o sistema Roadtrack.
 
 A API REST permite acesso fácil por sistemas e linguagens que entendam JSON.
 
@@ -28,8 +28,8 @@ A autenticação é feita através do envio de cabeçalhos  específicos a cada 
 
 ```shell
 curl "/api/v1/{endpoint}"
-  -H "access-token: {access-token}" 
-  -H "uid: {uid}" 
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
   -H "client: {client}"
 ```
 
@@ -65,7 +65,7 @@ uid          | Identificador único do usuário
 
 
 ```shell
-curl "https://api.roadtrack.com.br/v1/user_sign_in"
+curl "https://api.roadtrack.com.br/v1/user/login"
   -X POST
   -F "email={email}"
   -F "password={password}"
@@ -98,8 +98,8 @@ curl "https://api.roadtrack.com.br/v1/user_sign_in"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/account"
-  -H "access-token: {access-token}" 
-  -H "uid: {uid}" 
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
   -H "client: {client}"
 ```
 
@@ -123,8 +123,8 @@ curl "https://api.roadtrack.com.br/v1/account"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/vehicle"
-  -H "access-token: {access-token}" 
-  -H "uid: {uid}" 
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
   -H "client: {client}"
 ```
 
@@ -166,8 +166,8 @@ curl "https://api.roadtrack.com.br/v1/vehicle"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/vehicle/{id}"
-  -H "access-token: {access-token}" 
-  -H "uid: {uid}" 
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
   -H "client: {client}"
 ```
 
@@ -223,8 +223,8 @@ curl "https://api.roadtrack.com.br/v1/vehicle/{id}"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/warehouse"
-  -H "access-token: {access-token}" 
-  -H "uid: {uid}" 
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
   -H "client: {client}"
 ```
 
@@ -257,8 +257,8 @@ curl "https://api.roadtrack.com.br/v1/warehouse"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/warehouse/{id}"
-  -H "access-token: {access-token}" 
-  -H "uid: {uid}" 
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
   -H "client: {client}"
 ```
 
@@ -316,8 +316,8 @@ curl "https://api.roadtrack.com.br/v1/warehouse/{id}"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/route"
-  -H "access-token: {access-token}" 
-  -H "uid: {uid}" 
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
   -H "client: {client}"
 ```
 
@@ -362,8 +362,8 @@ curl "https://api.roadtrack.com.br/v1/route"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/route/{id}"
-  -H "access-token: {access-token}" 
-  -H "uid: {uid}" 
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
   -H "client: {client}"
 ```
 
@@ -491,8 +491,8 @@ curl "https://api.roadtrack.com.br/v1/route/{id}"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/manifest"
-  -H "access-token: {access-token}" 
-  -H "uid: {uid}" 
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
   -H "client: {client}"
 ```
 
@@ -606,8 +606,8 @@ curl "https://api.roadtrack.com.br/v1/manifest"
 
 ```shell
 curl "https://api.roadtrack.com.br/v1/manifest/{id}"
-  -H "access-token: {access-token}" 
-  -H "uid: {uid}" 
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
   -H "client: {client}"
 ```
 
