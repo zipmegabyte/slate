@@ -33,6 +33,10 @@ curl "/api/v1/{endpoint}"
   -H "client: {client}"
 ```
 
+Os valores de `access-token`, `uid` e `client` expiram geralmente após um único uso, de forma que é necessário que se use valores novos a cada nova requisição. Felizmente cada retorno da API traz em seus cabeçalhos novos valores para autenticação da próxima requisição.
+
+A recomendação para uso aqui é ter algum tipo de objeto global que contenha esses três valores e que seja atualizado a cada resposta da api e utlizado na próxima requisição, de forma que não seja necessário fazer login constantemente.
+
 ## Login
 
 O Login dá acesso ao usuário às outras funcionalidades do sistema. Deve ser feito sempre que o token de acesso expirar.
@@ -51,7 +55,7 @@ password  | A senha do usuário
 
 Parâmetro | Descrição
 --------- | ---------
-data      | Informações do usuário autenticado
+operative | Informações do usuário autenticado
 
 ## Cabeçalhos
 
@@ -75,15 +79,19 @@ curl "https://api.roadtrack.com.br/v1/user/login"
 
 ```json
 {
-  "data": {
-    "id": 2,
-    "email": "user@test.com",
-    "provider": "email",
-    "account_id": 1,
-    "uid": "user@test.com",
+  "operative": {
+    "href": "http://api.roadtrack.com.br/v1/user/1",
+    "created_at": "2016-09-07T00:11:55.143Z",
+    "updated_at": "2017-03-19T15:33:07.701Z",
+    "id": 1,
     "name": "John Appleseed",
     "nickname": "John",
-    "image": "image.jpg"
+    "image": null,
+    "email": "user@test.com",
+    "account": {
+      "href": "http://api.roadtrack.com.br/v1/account/1",
+      "id": 1
+    }
   }
 }
 ```
@@ -107,11 +115,14 @@ curl "https://api.roadtrack.com.br/v1/account"
 
 ```json
 {
-  "href": "https://api.roadtrack.com.br/v1/account/1",
-  "name": "Ramada",
-  "subdomain": "ramada",
-  "created_at": "2016-04-10T10:20:26.412Z",
-  "updated_at": "2016-04-10T10:20:26.412Z"
+  "account": {
+    "href": "http://api.roadtrack.com.br/v1/account/1",
+    "created_at": "2016-09-07T00:11:18.283Z",
+    "updated_at": "2016-09-07T00:11:18.283Z",
+    "id": 1,
+    "name": "Ramada",
+    "subdomain": "ramada"
+  }
 }
 ```
 
@@ -131,35 +142,58 @@ curl "https://api.roadtrack.com.br/v1/vehicle"
 > O comando acima retorna:
 
 ```json
-[
-  {
-    "href": "https://api.roadtrack.com.br/v1/vehicle/18",
-    "name": null,
-    "license": "KZY7142",
-    "kind": "CAMINHÃO",
-    "created_at": "2016-04-10T10:20:26.498Z",
-    "updated_at": "2016-04-10T10:20:26.498Z",
-    "account": "https://api.roadtrack.com.br/v1/route/account/1"
-  },
-  {
-    "href": "https://api.roadtrack.com.br/v1/vehicle/19",
-    "name": null,
-    "license": "LLN3357",
-    "kind": "KOMBI",
-    "created_at": "2016-04-10T10:20:26.499Z",
-    "updated_at": "2016-04-10T10:20:26.499Z",
-    "account": "https://api.roadtrack.com.br/v1/route/account/1"
-  },
-  {
-    "href": "https://api.roadtrack.com.br/v1/vehicle/20",
-    "name": null,
-    "license": "KPO2180",
-    "kind": "MOTO",
-    "created_at": "2016-04-10T10:20:26.501Z",
-    "updated_at": "2016-04-10T10:20:26.501Z",
-    "account": "https://api.roadtrack.com.br/v1/route/account/1"
-  }
-]
+{
+  "vehicles": [
+    {
+      "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+      "created_at": "2016-09-07T00:11:18.322Z",
+      "updated_at": "2016-09-07T00:11:18.322Z",
+      "name": null,
+      "license": "LTX2890",
+      "kind": "CAMINHÃO",
+      "id": 1,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "routes": {
+        "href": "http://api.roadtrack.com.br/v1/vehicle/1/routes"
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/vehicle/2",
+      "created_at": "2016-09-07T00:11:18.324Z",
+      "updated_at": "2016-09-07T00:11:18.324Z",
+      "name": null,
+      "license": "LOX7537",
+      "kind": "CAMINHÃO",
+      "id": 2,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "routes": {
+        "href": "http://api.roadtrack.com.br/v1/vehicle/2/routes"
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/vehicle/3",
+      "created_at": "2016-09-07T00:11:18.327Z",
+      "updated_at": "2016-09-07T00:11:18.327Z",
+      "name": null,
+      "license": "LNP5787",
+      "kind": "CAMINHÃO",
+      "id": 3,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "routes": {
+        "href": "http://api.roadtrack.com.br/v1/vehicle/3/routes"
+      }
+    }
+  ]
+}
 ```
 
 ## Um Veículo
@@ -173,45 +207,81 @@ curl "https://api.roadtrack.com.br/v1/vehicle/{id}"
 
 ```json
 {
-  "href": "https://api.roadtrack.com.br/v1/vehicle/18",
-  "name": null,
-  "license": "KZY7142",
-  "kind": "CAMINHÃO",
-  "created_at": "2016-04-10T10:20:26.498Z",
-  "updated_at": "2016-04-10T10:20:26.498Z",
-  "account_id": 1,
-  "routes": [
-    {
-      "href": "https://api.roadtrack.com.br/v1/route/13102",
-      "created_at": "2016-04-10T10:20:26.571Z",
-      "updated_at": "2016-06-21T18:47:02.287Z",
-      "leave_at": "2016-06-21T10:20:00.000Z",
-      "arrive_at": null,
-      "vehicle": "https://api.roadtrack.com.br/v1/route/vehicle/1",
-      "warehouse": "https://api.roadtrack.com.br/v1/route/warehouse/1",
-      "account": "https://api.roadtrack.com.br/v1/route/account/1"
+  "vehicle": {
+    "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+    "created_at": "2016-09-07T00:11:18.322Z",
+    "updated_at": "2016-09-07T00:11:18.322Z",
+    "name": null,
+    "license": "LTX2890",
+    "kind": "CAMINHÃO",
+    "id": 1,
+    "account": {
+      "href": "http://api.roadtrack.com.br/v1/account/1",
+      "id": 1
     },
-    {
-      "href": "https://api.roadtrack.com.br/v1/route/13103",
-      "created_at": "2016-04-10T10:20:26.576Z",
-      "updated_at": "2016-04-10T10:20:26.576Z",
-      "leave_at": "2016-04-10T10:20:26.575Z",
-      "arrive_at": null,
-      "vehicle": "https://api.roadtrack.com.br/v1/route/vehicle/1",
-      "warehouse": "https://api.roadtrack.com.br/v1/route/warehouse/1",
-      "account": "https://api.roadtrack.com.br/v1/route/account/1"
-    },
-    {
-      "href": "https://api.roadtrack.com.br/v1/route/13104",
-      "created_at": "2016-04-10T10:20:26.581Z",
-      "updated_at": "2016-04-10T10:20:26.581Z",
-      "leave_at": "2016-04-10T10:20:26.579Z",
-      "arrive_at": null,
-      "vehicle": "https://api.roadtrack.com.br/v1/route/vehicle/1",
-      "warehouse": "https://api.roadtrack.com.br/v1/route/warehouse/2",
-      "account": "https://api.roadtrack.com.br/v1/route/account/1"
-    }
-  ]
+    "routes": [
+      {
+        "href": "http://api.roadtrack.com.br/v1/route/13102",
+        "created_at": "2016-09-07T00:11:18.433Z",
+        "updated_at": "2016-09-07T00:11:18.433Z",
+        "id": 13102,
+        "leave_at": "2016-09-07T00:11:18.423Z",
+        "arrive_at": null,
+        "account": {
+          "href": "http://api.roadtrack.com.br/v1/account/1",
+          "id": 1
+        },
+        "vehicle": {
+          "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+          "id": 1
+        },
+        "warehouse": {
+          "href": "http://api.roadtrack.com.br/v1/warehouse/1",
+          "id": 1
+        }
+      },
+      {
+        "href": "http://api.roadtrack.com.br/v1/route/13103",
+        "created_at": "2016-09-07T00:11:18.436Z",
+        "updated_at": "2016-09-07T00:11:18.436Z",
+        "id": 13103,
+        "leave_at": "2016-09-07T00:11:18.436Z",
+        "arrive_at": null,
+        "account": {
+          "href": "http://api.roadtrack.com.br/v1/account/1",
+          "id": 1
+        },
+        "vehicle": {
+          "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+          "id": 1
+        },
+        "warehouse": {
+          "href": "http://api.roadtrack.com.br/v1/warehouse/1",
+          "id": 1
+        }
+      },
+      {
+        "href": "http://api.roadtrack.com.br/v1/route/13104",
+        "created_at": "2016-09-07T00:11:18.439Z",
+        "updated_at": "2016-09-07T00:11:18.439Z",
+        "id": 13104,
+        "leave_at": "2016-09-07T00:11:18.438Z",
+        "arrive_at": null,
+        "account": {
+          "href": "http://api.roadtrack.com.br/v1/account/1",
+          "id": 1
+        },
+        "vehicle": {
+          "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+          "id": 1
+        },
+        "warehouse": {
+          "href": "http://api.roadtrack.com.br/v1/warehouse/2",
+          "id": 2
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -231,26 +301,94 @@ curl "https://api.roadtrack.com.br/v1/warehouse"
 > O comando acima retorna:
 
 ```json
-[
-  {
-    "href": "https://api.roadtrack.com.br/v1/warehouse/1",
-    "name": "RAMADA CD 01",
-    "address": "Rua Pedro Jorio 365 - Rio de Janeiro, RJ - 21530-030 ",
-    "latitude": -22.826978,
-    "longitude": -43.354807,
-    "created_at": "2016-04-10T10:20:26.443Z",
-    "updated_at": "2016-04-10T10:20:26.443Z"
-  },
-  {
-    "href": "https://api.roadtrack.com.br/v1/warehouse/2",
-    "name": "RAMADA CD 02",
-    "address": "Rua dos Diamantes 388 - Rio de Janeiro, RJ - 21510-003",
-    "latitude": null,
-    "longitude": null,
-    "created_at": "2016-04-10T10:20:26.447Z",
-    "updated_at": "2016-04-10T10:20:26.447Z"
-  }
-]
+{
+  "warehouses": [
+    {
+      "href": "http://api.roadtrack.com.br/v1/warehouse/1",
+      "created_at": "2016-09-07T00:11:18.307Z",
+      "updated_at": "2016-09-07T00:11:18.307Z",
+      "name": "RAMADA CD 01",
+      "address": "Rua Pedro Jorio 365 - Rio de Janeiro, RJ - 21530-030 ",
+      "latitude": "-22.826978",
+      "longitude": "-43.354807",
+      "id": 1,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/warehouse/2",
+      "created_at": "2016-09-07T00:11:18.310Z",
+      "updated_at": "2016-09-07T00:11:18.310Z",
+      "name": "RAMADA CD 02",
+      "address": "Rua dos Diamantes 388 - Rio de Janeiro, RJ - 21510-003",
+      "latitude": null,
+      "longitude": null,
+      "id": 2,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/warehouse/3",
+      "created_at": "2016-09-07T00:12:26.994Z",
+      "updated_at": "2016-09-07T00:12:57.772Z",
+      "name": "Warehouse 3",
+      "address": "Rua Pedro Jorio 365 - Rio de Janeiro, RJ - 21530-030",
+      "latitude": "-22.8269785",
+      "longitude": "-43.3548071",
+      "id": 3,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/warehouse/4",
+      "created_at": "2016-09-07T00:12:33.041Z",
+      "updated_at": "2016-09-07T00:13:04.293Z",
+      "name": "Warehouse 4",
+      "address": "Rua Pedro Jorio 365 - Rio de Janeiro, RJ - 21530-030 ",
+      "latitude": "-22.8269785",
+      "longitude": "-43.3548071",
+      "id": 4,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/warehouse/5",
+      "created_at": "2016-09-07T00:12:38.492Z",
+      "updated_at": "2016-09-07T00:13:11.865Z",
+      "name": "Warehouse 5",
+      "address": "Rua Pedro Jorio 365 - Rio de Janeiro, RJ - 21530-030 ",
+      "latitude": "-22.8269785",
+      "longitude": "-43.3548071",
+      "id": 5,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/warehouse/6",
+      "created_at": "2016-09-07T00:53:08.334Z",
+      "updated_at": "2016-09-07T00:53:08.334Z",
+      "name": "CASA",
+      "address": "RUA CESAR LATTES, 260",
+      "latitude": "-23.0001518",
+      "longitude": "-43.4213808",
+      "id": 6,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      }
+    }
+  ]
+}
 ```
 
 ## Um Centro de Distribuição
@@ -266,45 +404,62 @@ curl "https://api.roadtrack.com.br/v1/warehouse/{id}"
 
 ```json
 {
-  "href": "https://api.roadtrack.com.br/v1/warehouse/1",
-  "name": "RAMADA CD 01",
-  "address": "Rua Pedro Jorio 365 - Rio de Janeiro, RJ - 21530-030 ",
-  "latitude": -22.826978,
-  "longitude": -43.354807,
-  "created_at": "2016-04-10T10:20:26.443Z",
-  "updated_at": "2016-04-10T10:20:26.443Z",
-  "routes": [
-    {
-      "href": "https://api.roadtrack.com.br/v1/route/13102",
-      "created_at": "2016-04-10T10:20:26.571Z",
-      "updated_at": "2016-06-21T18:47:02.287Z",
-      "leave_at": "2016-06-21T10:20:00.000Z",
-      "arrive_at": null,
-      "vehicle": "https://api.roadtrack.com.br/v1/route/vehicle/1",
-      "warehouse": "https://api.roadtrack.com.br/v1/route/warehouse/1",
-      "account": "https://api.roadtrack.com.br/v1/route/account/1"
+  "warehouse": {
+    "href": "http://api.roadtrack.com.br/v1/warehouse/1",
+    "created_at": "2016-09-07T00:11:18.307Z",
+    "updated_at": "2016-09-07T00:11:18.307Z",
+    "name": "RAMADA CD 01",
+    "address": "Rua Pedro Jorio 365 - Rio de Janeiro, RJ - 21530-030 ",
+    "latitude": "-22.826978",
+    "longitude": "-43.354807",
+    "id": 1,
+    "account": {
+      "href": "http://api.roadtrack.com.br/v1/account/1",
+      "id": 1
     },
-    {
-      "href": "https://api.roadtrack.com.br/v1/route/13103",
-      "created_at": "2016-04-10T10:20:26.576Z",
-      "updated_at": "2016-04-10T10:20:26.576Z",
-      "leave_at": "2016-04-10T10:20:26.575Z",
-      "arrive_at": null,
-      "vehicle": "https://api.roadtrack.com.br/v1/route/vehicle/1",
-      "warehouse": "https://api.roadtrack.com.br/v1/route/warehouse/1",
-      "account": "https://api.roadtrack.com.br/v1/route/account/1"
-    },
-    {
-      "href": "https://api.roadtrack.com.br/v1/route/13104",
-      "created_at": "2016-04-10T10:20:26.581Z",
-      "updated_at": "2016-04-10T10:20:26.581Z",
-      "leave_at": "2016-04-10T10:20:26.579Z",
-      "arrive_at": null,
-      "vehicle": "https://api.roadtrack.com.br/v1/route/vehicle/1",
-      "warehouse": "https://api.roadtrack.com.br/v1/route/warehouse/2",
-      "account": "https://api.roadtrack.com.br/v1/route/account/1"
-    }
-  ]
+    "routes": [
+      {
+        "href": "http://api.roadtrack.com.br/v1/route/13102",
+        "created_at": "2016-09-07T00:11:18.433Z",
+        "updated_at": "2016-09-07T00:11:18.433Z",
+        "id": 13102,
+        "leave_at": "2016-09-07T00:11:18.423Z",
+        "arrive_at": null,
+        "account": {
+          "href": "http://api.roadtrack.com.br/v1/account/1",
+          "id": 1
+        },
+        "vehicle": {
+          "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+          "id": 1
+        },
+        "warehouse": {
+          "href": "http://api.roadtrack.com.br/v1/warehouse/1",
+          "id": 1
+        }
+      },
+      {
+        "href": "http://api.roadtrack.com.br/v1/route/13103",
+        "created_at": "2016-09-07T00:11:18.436Z",
+        "updated_at": "2016-09-07T00:11:18.436Z",
+        "id": 13103,
+        "leave_at": "2016-09-07T00:11:18.436Z",
+        "arrive_at": null,
+        "account": {
+          "href": "http://api.roadtrack.com.br/v1/account/1",
+          "id": 1
+        },
+        "vehicle": {
+          "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+          "id": 1
+        },
+        "warehouse": {
+          "href": "http://api.roadtrack.com.br/v1/warehouse/1",
+          "id": 1
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -324,38 +479,90 @@ curl "https://api.roadtrack.com.br/v1/route"
 > Ocomando acima retorna:
 
 ```json
-[
-  {
-    "href": "https://api.roadtrack.com.br/v1/route/13103",
-    "created_at": "2016-04-10T10:20:26.576Z",
-    "updated_at": "2016-04-10T10:20:26.576Z",
-    "leave_at": "2016-04-10T10:20:26.575Z",
-    "arrive_at": null,
-    "vehicle": "https://api.roadtrack.com.br/v1/route/vehicle/1",
-    "warehouse": "https://api.roadtrack.com.br/v1/route/warehouse/1",
-    "account": "https://api.roadtrack.com.br/v1/route/account/1"
-  },
-  {
-    "href": "https://api.roadtrack.com.br/v1/route/13104",
-    "created_at": "2016-04-10T10:20:26.581Z",
-    "updated_at": "2016-04-10T10:20:26.581Z",
-    "leave_at": "2016-04-10T10:20:26.579Z",
-    "arrive_at": null,
-    "vehicle": "https://api.roadtrack.com.br/v1/route/vehicle/1",
-    "warehouse": "https://api.roadtrack.com.br/v1/route/warehouse/2",
-    "account": "https://api.roadtrack.com.br/v1/route/account/1"
-  },
-  {
-    "href": "https://api.roadtrack.com.br/v1/route/13102",
-    "created_at": "2016-04-10T10:20:26.571Z",
-    "updated_at": "2016-06-21T18:47:02.287Z",
-    "leave_at": "2016-06-21T10:20:00.000Z",
-    "arrive_at": null,
-    "vehicle": "https://api.roadtrack.com.br/v1/route/vehicle/1",
-    "warehouse": "https://api.roadtrack.com.br/v1/route/warehouse/1",
-    "account": "https://api.roadtrack.com.br/v1/route/account/1"
-  }
-]
+{
+  "routes": [
+    {
+      "href": "http://api.roadtrack.com.br/v1/route/13102",
+      "created_at": "2016-09-07T00:11:18.433Z",
+      "updated_at": "2016-09-07T00:11:18.433Z",
+      "id": 13102,
+      "leave_at": "2016-09-07T00:11:18.423Z",
+      "arrive_at": null,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "vehicle": {
+        "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+        "id": 1
+      },
+      "warehouse": {
+        "href": "http://api.roadtrack.com.br/v1/warehouse/1",
+        "id": 1
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/route/13103",
+      "created_at": "2016-09-07T00:11:18.436Z",
+      "updated_at": "2016-09-07T00:11:18.436Z",
+      "id": 13103,
+      "leave_at": "2016-09-07T00:11:18.436Z",
+      "arrive_at": null,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "vehicle": {
+        "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+        "id": 1
+      },
+      "warehouse": {
+        "href": "http://api.roadtrack.com.br/v1/warehouse/1",
+        "id": 1
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/route/13104",
+      "created_at": "2016-09-07T00:11:18.439Z",
+      "updated_at": "2016-09-07T00:11:18.439Z",
+      "id": 13104,
+      "leave_at": "2016-09-07T00:11:18.438Z",
+      "arrive_at": null,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "vehicle": {
+        "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+        "id": 1
+      },
+      "warehouse": {
+        "href": "http://api.roadtrack.com.br/v1/warehouse/2",
+        "id": 2
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/route/25662",
+      "created_at": "2016-09-07T00:13:41.715Z",
+      "updated_at": "2016-09-07T00:13:41.715Z",
+      "id": 25662,
+      "leave_at": null,
+      "arrive_at": null,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "vehicle": {
+        "href": "http://api.roadtrack.com.br/v1/vehicle/23",
+        "id": 23
+      },
+      "warehouse": {
+        "href": "http://api.roadtrack.com.br/v1/warehouse/3",
+        "id": 3
+      }
+    }
+  ]
+}
 ```
 
 ## Uma Rota
@@ -371,115 +578,151 @@ curl "https://api.roadtrack.com.br/v1/route/{id}"
 
 ```json
 {
-  "href": "https://api.roadtrack.com.br/v1/route/13103",
-  "created_at": "2016-04-10T10:20:26.576Z",
-  "updated_at": "2016-04-10T10:20:26.576Z",
-  "leave_at": "2016-04-10T10:20:26.575Z",
-  "arrive_at": null,
-  "vehicle": "https://api.roadtrack.com.br/v1/route/vehicle/1",
-  "warehouse": "https://api.roadtrack.com.br/v1/route/warehouse/1",
-  "account": "https://api.roadtrack.com.br/v1/route/account/1",
-  "manifests": [
-    {
-      "href": "https://api.roadtrack.com.br/v1/manifest/1",
-      "action": "E",
-      "invoice_number": "323996",
-      "invoice_date": "2014-12-03",
-      "invoice_value": 941.21,
-      "sequence": 40,
-      "items_count": 8,
-      "gross_weight": 1,
-      "client_name": "# ROSHELAR MAT. ELETR. HIDR.LTDA(M.E)",
-      "client_id": 2607,
-      "client_phone": "2134641468",
-      "client_federal_number": "4065336000193",
-      "client_email": "marcio777@gmail.com",
-      "address_street": "DO GOVERNO",
-      "address_number": "1067",
-      "address_more": "",
-      "address_zip": "21770100",
-      "address_region": "CAMPO GRANDE ",
-      "address_city": "RIO DE JANEIRO",
-      "address_state": "RJ",
-      "latitude": -22.90856,
-      "longitude": -43.176935,
-      "comments": "TESTANDO CARGA DE DADOS",
-      "status": "initial",
-      "arrive_at": null,
-      "leave_at": null,
-      "created_at": "2016-04-10T10:20:26.609Z",
-      "updated_at": "2016-04-10T10:20:26.609Z",
-      "imported_at": null,
-      "account": "https://api.roadtrack.com.br/v1/account/1",
-      "route": "https://api.roadtrack.com.br/v1/route/13102"
+  "route": {
+    "href": "http://api.roadtrack.com.br/v1/route/13103",
+    "created_at": "2016-09-07T00:11:18.436Z",
+    "updated_at": "2016-09-07T00:11:18.436Z",
+    "id": 13103,
+    "leave_at": "2016-09-07T00:11:18.436Z",
+    "arrive_at": null,
+    "account": {
+      "href": "http://api.roadtrack.com.br/v1/account/1",
+      "id": 1
     },
-    {
-      "href": "https://api.roadtrack.com.br/v1/manifest/7",
-      "action": "E",
-      "invoice_number": "324024",
-      "invoice_date": "2014-12-03",
-      "invoice_value": 1089.92,
-      "sequence": 60,
-      "items_count": 6,
-      "gross_weight": 1,
-      "client_name": "BAZAR SAO DOMINGOS DE BANGU LTDA ME",
-      "client_id": 46305,
-      "client_phone": "00213331 8662",
-      "client_federal_number": "4080423000110",
-      "client_email": "marcio777@gmail.com",
-      "address_street": "CEL. TAMARINDO",
-      "address_number": "SN",
-      "address_more": "LOJA C PLAT EST BANGU",
-      "address_zip": "21840440",
-      "address_region": "CAMPO GRANDE ",
-      "address_city": "RIO DE JANEIRO",
-      "address_state": "RJ",
-      "latitude": -22.96354,
-      "longitude": -43.348961,
-      "comments": "TESTANDO CARGA DE DADOS",
-      "status": "initial",
-      "arrive_at": null,
-      "leave_at": null,
-      "created_at": "2016-04-10T10:20:26.638Z",
-      "updated_at": "2016-04-10T10:20:26.638Z",
-      "imported_at": null,
-      "account": "https://api.roadtrack.com.br/v1/account/1",
-      "route": "https://api.roadtrack.com.br/v1/route/13102"
+    "vehicle": {
+      "href": "http://api.roadtrack.com.br/v1/vehicle/1",
+      "id": 1
     },
-    {
-      "href": "https://api.roadtrack.com.br/v1/manifest/8",
-      "action": "E",
-      "invoice_number": "324025",
-      "invoice_date": "2014-12-03",
-      "invoice_value": 219.77,
-      "sequence": 100,
-      "items_count": 5,
-      "gross_weight": 1,
-      "client_name": "GGJ BZ.E MATERIAIS DE CONSTRUCAO LTDA.",
-      "client_id": 1513,
-      "client_phone": "2124128396",
-      "client_federal_number": "7649256000173",
-      "client_email": "marcio777@gmail.com",
-      "address_street": "ARY LOBO",
-      "address_number": "SN",
-      "address_more": "LOTE 31 QUADRA 37",
-      "address_zip": "23088120",
-      "address_region": "CAMPO GRANDE ",
-      "address_city": "RIO DE JANEIRO",
-      "address_state": "RJ",
-      "latitude": -23.012213,
-      "longitude": -43.433418,
-      "comments": "TESTANDO CARGA DE DADOS",
-      "status": "initial",
-      "arrive_at": null,
-      "leave_at": null,
-      "created_at": "2016-04-10T10:20:26.643Z",
-      "updated_at": "2016-04-10T10:20:26.643Z",
-      "imported_at": null,
-      "account": "https://api.roadtrack.com.br/v1/account/1",
-      "route": "https://api.roadtrack.com.br/v1/route/13102"
-    }
-  ]
+    "warehouse": {
+      "href": "http://api.roadtrack.com.br/v1/warehouse/1",
+      "id": 1
+    },
+    "manifests": [
+      {
+        "href": "http://api.roadtrack.com.br/v1/manifest/17",
+        "created_at": "2016-09-07T00:11:18.535Z",
+        "updated_at": "2016-09-07T00:11:18.535Z",
+        "id": 17,
+        "action": "E",
+        "invoice_number": "324006",
+        "invoice_date": "2014-12-03",
+        "invoice_value": "2382.4",
+        "sequence": 10,
+        "items_count": 28,
+        "gross_weight": "1.0",
+        "client_name": "J L E PACHECO MAT DE CONSTRUCAO LTDA ME",
+        "client_id": 105432,
+        "client_phone": "2227581723",
+        "client_federal_number": "15833272000140",
+        "client_email": "marcio777@gmail.com",
+        "address_street": "CAP. EDUARDO RAPOSO",
+        "address_number": "279",
+        "address_more": "",
+        "address_zip": "28400000",
+        "address_region": "SAO FIDELIS",
+        "address_city": "SAO FIDELIS",
+        "address_state": "RJ",
+        "latitude": null,
+        "longitude": null,
+        "comments": "TESTANDO CARGA DE DADOS",
+        "status": "initial",
+        "arrive_at": null,
+        "leave_at": null,
+        "imported_at": null,
+        "signature_href": null,
+        "account": {
+          "href": "http://api.roadtrack.com.br/v1/account/1",
+          "id": 1
+        },
+        "route": {
+          "href": "http://api.roadtrack.com.br/v1/route/13103",
+          "id": 13103
+        }
+      },
+      {
+        "href": "http://api.roadtrack.com.br/v1/manifest/20",
+        "created_at": "2016-09-07T00:11:18.547Z",
+        "updated_at": "2016-09-07T00:11:18.547Z",
+        "id": 20,
+        "action": "E",
+        "invoice_number": "324009",
+        "invoice_date": "2014-12-03",
+        "invoice_value": "6785.59",
+        "sequence": 20,
+        "items_count": 83,
+        "gross_weight": "11.11",
+        "client_name": "MICHELLE S PANISSET COM MAT CONST ME ",
+        "client_id": 44068,
+        "client_phone": "2226259327",
+        "client_federal_number": "10643701000100",
+        "client_email": "marcio777@gmail.com",
+        "address_street": "VER. ALBERTO LOPES RUBIM",
+        "address_number": "280",
+        "address_more": "",
+        "address_zip": "28400000",
+        "address_region": "SAO FIDELIS",
+        "address_city": "SAO FIDELIS",
+        "address_state": "RJ",
+        "latitude": null,
+        "longitude": null,
+        "comments": "TESTANDO CARGA DE DADOS",
+        "status": "initial",
+        "arrive_at": null,
+        "leave_at": null,
+        "imported_at": null,
+        "signature_href": null,
+        "account": {
+          "href": "http://api.roadtrack.com.br/v1/account/1",
+          "id": 1
+        },
+        "route": {
+          "href": "http://api.roadtrack.com.br/v1/route/13103",
+          "id": 13103
+        }
+      },
+      {
+        "href": "http://api.roadtrack.com.br/v1/manifest/14",
+        "created_at": "2016-09-07T00:11:18.519Z",
+        "updated_at": "2016-09-07T00:11:18.519Z",
+        "id": 14,
+        "action": "E",
+        "invoice_number": "324003",
+        "invoice_date": "2014-12-03",
+        "invoice_value": "791.72",
+        "sequence": 30,
+        "items_count": 11,
+        "gross_weight": "1.0",
+        "client_name": "SAO FIDELIS AUTOMOVEIS LTDA",
+        "client_id": 38515,
+        "client_phone": "2227581383",
+        "client_federal_number": "39213368000173",
+        "client_email": "marcio777@gmail.com",
+        "address_street": "CEL. JOAO SANCHES",
+        "address_number": "161",
+        "address_more": "LOJA C",
+        "address_zip": "28400000",
+        "address_region": "SAO FIDELIS",
+        "address_city": "SAO FIDELIS",
+        "address_state": "RJ",
+        "latitude": null,
+        "longitude": null,
+        "comments": "TESTANDO CARGA DE DADOS",
+        "status": "initial",
+        "arrive_at": null,
+        "leave_at": null,
+        "imported_at": null,
+        "signature_href": null,
+        "account": {
+          "href": "http://api.roadtrack.com.br/v1/account/1",
+          "id": 1
+        },
+        "route": {
+          "href": "http://api.roadtrack.com.br/v1/route/13103",
+          "id": 13103
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -499,82 +742,201 @@ curl "https://api.roadtrack.com.br/v1/manifest"
 > Ocomando acima retorna:
 
 ```json
-[
-  {
-    "href": "https://api.roadtrack.com.br/v1/manifest/1",
-    "action": "E",
-    "invoice_number": "323996",
-    "invoice_date": "2014-12-03",
-    "invoice_value": 941.21,
-    "sequence": 40,
-    "items_count": 8,
-    "gross_weight": 1,
-    "client_name": "# ROSHELAR MAT. ELETR. HIDR.LTDA(M.E)",
-    "client_id": 2607,
-    "client_phone": "2134641468",
-    "client_federal_number": "4065336000193",
-    "client_email": "marcio777@gmail.com",
-    "address_street": "DO GOVERNO",
-    "address_number": "1067",
-    "address_more": "",
-    "address_zip": "21770100",
-    "address_region": "CAMPO GRANDE ",
-    "address_city": "RIO DE JANEIRO",
-    "address_state": "RJ",
-    "latitude": -22.90856,
-    "longitude": -43.176935,
-    "comments": "TESTANDO CARGA DE DADOS",
-    "status": "initial",
-    "arrive_at": null,
-    "leave_at": null,
-    "created_at": "2016-04-10T10:20:26.609Z",
-    "updated_at": "2016-04-10T10:20:26.609Z",
-    "imported_at": null,
-    "account": "https://api.roadtrack.com.br/v1/account/1",
-    "route": "https://api.roadtrack.com.br/v1/route/13102"
-  },
-  {
-    "href": "https://api.roadtrack.com.br/v1/manifest/7",
-    "action": "E",
-    "invoice_number": "324024",
-    "invoice_date": "2014-12-03",
-    "invoice_value": 1089.92,
-    "sequence": 60,
-    "items_count": 6,
-    "gross_weight": 1,
-    "client_name": "BAZAR SAO DOMINGOS DE BANGU LTDA ME",
-    "client_id": 46305,
-    "client_phone": "00213331 8662",
-    "client_federal_number": "4080423000110",
-    "client_email": "marcio777@gmail.com",
-    "address_street": "CEL. TAMARINDO",
-    "address_number": "SN",
-    "address_more": "LOJA C PLAT EST BANGU",
-    "address_zip": "21840440",
-    "address_region": "CAMPO GRANDE ",
-    "address_city": "RIO DE JANEIRO",
-    "address_state": "RJ",
-    "latitude": -22.96354,
-    "longitude": -43.348961,
-    "comments": "TESTANDO CARGA DE DADOS",
-    "status": "initial",
-    "arrive_at": null,
-    "leave_at": null,
-    "created_at": "2016-04-10T10:20:26.638Z",
-    "updated_at": "2016-04-10T10:20:26.638Z",
-    "imported_at": null,
-    "account": "https://api.roadtrack.com.br/v1/account/1",
-    "route": "https://api.roadtrack.com.br/v1/route/13102"
-  },
-  {
-    "href": "https://api.roadtrack.com.br/v1/manifest/8",
+{
+  "manifests": [
+    {
+      "href": "http://api.roadtrack.com.br/v1/manifest/1",
+      "created_at": "2016-09-07T00:11:18.467Z",
+      "updated_at": "2017-03-05T18:58:43.750Z",
+      "id": 1,
+      "action": "E",
+      "invoice_number": "323996",
+      "invoice_date": "2014-12-03",
+      "invoice_value": "941.21",
+      "sequence": 40,
+      "items_count": 8,
+      "gross_weight": "1.04",
+      "client_name": "# ROSHELAR MAT. ELETR. HIDR.LTDA(M.E)",
+      "client_id": 2607,
+      "client_phone": "2134641468",
+      "client_federal_number": "4065336000193",
+      "client_email": "marcio777@gmail.com",
+      "address_street": "DO GOVERNO",
+      "address_number": "1067",
+      "address_more": "",
+      "address_zip": "21770100",
+      "address_region": "CAMPO GRANDE ",
+      "address_city": "RIO DE JANEIRO",
+      "address_state": "PB",
+      "latitude": "-22.2008945",
+      "longitude": "-43.2908233",
+      "comments": "TESTANDO CARGA DE DADOS",
+      "status": "initial",
+      "arrive_at": null,
+      "leave_at": null,
+      "imported_at": null,
+      "signature_href": null,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "route": {
+        "href": "http://api.roadtrack.com.br/v1/route/13102",
+        "id": 13102
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/manifest/7",
+      "created_at": "2016-09-07T00:11:18.490Z",
+      "updated_at": "2016-09-07T00:11:18.490Z",
+      "id": 7,
+      "action": "E",
+      "invoice_number": "324024",
+      "invoice_date": "2014-12-03",
+      "invoice_value": "1089.92",
+      "sequence": 60,
+      "items_count": 6,
+      "gross_weight": "1.0",
+      "client_name": "BAZAR SAO DOMINGOS DE BANGU LTDA ME",
+      "client_id": 46305,
+      "client_phone": "00213331 8662",
+      "client_federal_number": "4080423000110",
+      "client_email": "marcio777@gmail.com",
+      "address_street": "CEL. TAMARINDO",
+      "address_number": "SN",
+      "address_more": "LOJA C PLAT EST BANGU",
+      "address_zip": "21840440",
+      "address_region": "CAMPO GRANDE ",
+      "address_city": "RIO DE JANEIRO",
+      "address_state": "RJ",
+      "latitude": "-22.96354",
+      "longitude": "-43.348961",
+      "comments": "TESTANDO CARGA DE DADOS",
+      "status": "initial",
+      "arrive_at": null,
+      "leave_at": null,
+      "imported_at": null,
+      "signature_href": null,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "route": {
+        "href": "http://api.roadtrack.com.br/v1/route/13102",
+        "id": 13102
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/manifest/8",
+      "created_at": "2016-09-07T00:11:18.493Z",
+      "updated_at": "2016-09-07T00:11:18.493Z",
+      "id": 8,
+      "action": "E",
+      "invoice_number": "324025",
+      "invoice_date": "2014-12-03",
+      "invoice_value": "219.77",
+      "sequence": 100,
+      "items_count": 5,
+      "gross_weight": "1.0",
+      "client_name": "GGJ BZ.E MATERIAIS DE CONSTRUCAO LTDA.",
+      "client_id": 1513,
+      "client_phone": "2124128396",
+      "client_federal_number": "7649256000173",
+      "client_email": "marcio777@gmail.com",
+      "address_street": "ARY LOBO",
+      "address_number": "SN",
+      "address_more": "LOTE 31 QUADRA 37",
+      "address_zip": "23088120",
+      "address_region": "CAMPO GRANDE ",
+      "address_city": "RIO DE JANEIRO",
+      "address_state": "RJ",
+      "latitude": "-23.012213",
+      "longitude": "-43.433418",
+      "comments": "TESTANDO CARGA DE DADOS",
+      "status": "initial",
+      "arrive_at": null,
+      "leave_at": null,
+      "imported_at": null,
+      "signature_href": null,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "route": {
+        "href": "http://api.roadtrack.com.br/v1/route/13102",
+        "id": 13102
+      }
+    },
+    {
+      "href": "http://api.roadtrack.com.br/v1/manifest/4",
+      "created_at": "2016-09-07T00:11:18.479Z",
+      "updated_at": "2016-09-07T00:11:18.479Z",
+      "id": 4,
+      "action": "C",
+      "invoice_number": "323999",
+      "invoice_date": "2014-12-03",
+      "invoice_value": "437.93",
+      "sequence": 120,
+      "items_count": 1,
+      "gross_weight": "30.0",
+      "client_name": "COM MAT CONSTRUCOES FLAMILTA LTDA ME",
+      "client_id": 105656,
+      "client_phone": "00213427 3696",
+      "client_federal_number": "10284831000196",
+      "client_email": "marcio777@gmail.com",
+      "address_street": "CAMPO MAIOR",
+      "address_number": "543",
+      "address_more": "",
+      "address_zip": "23015200",
+      "address_region": "CAMPO GRANDE ",
+      "address_city": "RIO DE JANEIRO",
+      "address_state": "RJ",
+      "latitude": "-22.946153",
+      "longitude": "-43.384666",
+      "comments": "TESTANDO CARGA DE DADOS",
+      "status": "initial",
+      "arrive_at": null,
+      "leave_at": null,
+      "imported_at": null,
+      "signature_href": null,
+      "account": {
+        "href": "http://api.roadtrack.com.br/v1/account/1",
+        "id": 1
+      },
+      "route": {
+        "href": "http://api.roadtrack.com.br/v1/route/13102",
+        "id": 13102
+      }
+    }
+  ]
+}
+```
+
+## Um Manifesto
+
+```shell
+curl "https://api.roadtrack.com.br/v1/manifest/{id}"
+  -H "access-token: {access-token}"
+  -H "uid: {uid}"
+  -H "client: {client}"
+```
+
+> O comando acima retorna:
+
+```json
+{
+  "manifest": {
+    "href": "http://api.roadtrack.com.br/v1/manifest/8",
+    "created_at": "2016-09-07T00:11:18.493Z",
+    "updated_at": "2016-09-07T00:11:18.493Z",
+    "id": 8,
     "action": "E",
     "invoice_number": "324025",
     "invoice_date": "2014-12-03",
-    "invoice_value": 219.77,
+    "invoice_value": "219.77",
     "sequence": 100,
     "items_count": 5,
-    "gross_weight": 1,
+    "gross_weight": "1.0",
     "client_name": "GGJ BZ.E MATERIAIS DE CONSTRUCAO LTDA.",
     "client_id": 1513,
     "client_phone": "2124128396",
@@ -587,64 +949,22 @@ curl "https://api.roadtrack.com.br/v1/manifest"
     "address_region": "CAMPO GRANDE ",
     "address_city": "RIO DE JANEIRO",
     "address_state": "RJ",
-    "latitude": -23.012213,
-    "longitude": -43.433418,
+    "latitude": "-23.012213",
+    "longitude": "-43.433418",
     "comments": "TESTANDO CARGA DE DADOS",
     "status": "initial",
     "arrive_at": null,
     "leave_at": null,
-    "created_at": "2016-04-10T10:20:26.643Z",
-    "updated_at": "2016-04-10T10:20:26.643Z",
     "imported_at": null,
-    "account": "https://api.roadtrack.com.br/v1/account/1",
-    "route": "https://api.roadtrack.com.br/v1/route/13102"
+    "signature_href": null,
+    "account": {
+      "href": "http://api.roadtrack.com.br/v1/account/1",
+      "id": 1
+    },
+    "route": {
+      "href": "http://api.roadtrack.com.br/v1/route/13102",
+      "id": 13102
+    }
   }
-]
-```
-
-## Um Manifesto
-
-```shell
-curl "https://api.roadtrack.com.br/v1/manifest/{id}"
-  -H "access-token: {access-token}"
-  -H "uid: {uid}"
-  -H "client: {client}"
-```
-
-> Ocomando acima retorna:
-
-```json
-{
-  "href": "https://api.roadtrack.com.br/v1/manifest/8",
-  "action": "E",
-  "invoice_number": "324025",
-  "invoice_date": "2014-12-03",
-  "invoice_value": 219.77,
-  "sequence": 100,
-  "items_count": 5,
-  "gross_weight": 1,
-  "client_name": "GGJ BZ.E MATERIAIS DE CONSTRUCAO LTDA.",
-  "client_id": 1513,
-  "client_phone": "2124128396",
-  "client_federal_number": "7649256000173",
-  "client_email": "marcio777@gmail.com",
-  "address_street": "ARY LOBO",
-  "address_number": "SN",
-  "address_more": "LOTE 31 QUADRA 37",
-  "address_zip": "23088120",
-  "address_region": "CAMPO GRANDE ",
-  "address_city": "RIO DE JANEIRO",
-  "address_state": "RJ",
-  "latitude": -23.012213,
-  "longitude": -43.433418,
-  "comments": "TESTANDO CARGA DE DADOS",
-  "status": "initial",
-  "arrive_at": null,
-  "leave_at": null,
-  "created_at": "2016-04-10T10:20:26.643Z",
-  "updated_at": "2016-04-10T10:20:26.643Z",
-  "imported_at": null,
-  "account": "https://api.roadtrack.com.br/v1/account/1",
-  "route": "https://api.roadtrack.com.br/v1/route/13102"
 }
 ```
