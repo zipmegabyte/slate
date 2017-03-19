@@ -968,3 +968,73 @@ curl "https://api.roadtrack.com.br/v1/manifest/{id}"
   }
 }
 ```
+
+## Assinatura digital do Manifesto
+
+Um manifesto pode conter uma imagem com a assinatura digital do cliente. Para enviar esta imagem, converta-a em base64 e envie-a no campo `signature` do manifesto.
+
+O manifesto irá conter o `href` para a imagem no campo `signature_href`. Para excluir uma assinatura, atualize o manifesto com o campo `signature` com o valor `null`.
+
+```shell
+curl
+  -X PUT
+  -H "Etag: W/\"e0896cc03572d494e13dee7fa44c3042\""
+  -H "X-Request-Id: null"
+  -H "client: aqPnaWZ7pdmXko3q9sYV6g"
+  -H "uid: user@email.com"
+  -H "access-token: j4CiXlcFeuBJNzPHefxnYw"
+  -H "Content-Type: application/json"
+  -H "Cache-Control: no-cache"
+  -d '{
+	   "signature" : "data:image/jpeg;base64, $(openssl base64 -A -in signature.jpg)"
+  }'
+  "http://api.roadtrack.com.br/v1/manifest/1"
+```
+
+>O comando acima adiciona uma imagem contida em signature.jpg ao manifesto de id 1. Retorno:
+
+```json
+{
+  "manifest": {
+    "href": "http://api.roadtrack.com.br/v1/manifest/1",
+    "created_at": "2017-03-16T21:41:11.040Z",
+    "updated_at": "2017-03-19T16:10:15.776Z",
+    "id": 1,
+    "action": "E",
+    "invoice_number": "323996",
+    "invoice_date": "2014-12-03",
+    "invoice_value": "941.21",
+    "sequence": 45,
+    "items_count": 8,
+    "gross_weight": "1.0",
+    "client_name": "# ROSHELAR MAT. ELETR. HIDR.LTDA(M.E)",
+    "client_id": 2607,
+    "client_phone": "2134641468",
+    "client_federal_number": "4065336000193",
+    "client_email": "marcio777@gmail.com",
+    "address_street": "DO GOVERNO",
+    "address_number": "1067",
+    "address_more": "",
+    "address_zip": "21770100",
+    "address_region": "CAMPO GRANDE ",
+    "address_city": "RIO DE JANEIRO",
+    "address_state": "RJ",
+    "latitude": "-22.90856",
+    "longitude": "-43.176935",
+    "comments": "TESTANDO CARGA DE DADOS",
+    "status": "initial",
+    "arrive_at": null,
+    "leave_at": null,
+    "imported_at": null,
+    "signature_href": "/uploads/manifest/signature/1/signature.jpeg",
+    "account": {
+      "href": "http://api.roadtrack.com.br/v1/account/1",
+      "id": 1
+    },
+    "route": {
+      "href": "http://api.roadtrack.com.br/v1/route/13102",
+      "id": 13102
+    }
+  }
+}
+```
